@@ -4,9 +4,9 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.timerElement = container.querySelector('.status__timer');
 
     this.reset();
-
     this.registerEvents();
   }
 
@@ -14,21 +14,43 @@ class Game {
     this.setNewWord();
     this.winsElement.textContent = 0;
     this.lossElement.textContent = 0;
+    this.timer = 0;
+    this.timerInterval = null;
   }
 
   registerEvents() {
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода символа вызываем this.success()
-      При неправильном вводе символа - this.fail();
-      DOM-элемент текущего символа находится в свойстве this.currentSymbol.
-     */
+    document.addEventListener('keydown', (e) => {
+      const enteredSymbol = e.key;
+      
+      // Если введённый символ правильный
+      if (enteredSymbol.toLowerCase() === this.currentSymbol.textContent.toLowerCase()) {
+        this.success();
+      } else {
+        this.fail();
+      }
+    });
+  }
+
+  startTimer() {
+    this.timer = this.currentWord.length;
+    this.timerElement.textContent = this.timer;
+
+    // Таймер, уменьшающийся каждую секунду
+    this.timerInterval = setInterval(() => {
+      this.timer--;
+      this.timerElement.textContent = this.timer;
+      
+      if (this.timer <= 0) {
+        clearInterval(this.timerInterval);
+        this.fail();  // Если время истекло, считается поражение
+      }
+    }, 1000);
   }
 
   success() {
-    if(this.currentSymbol.classList.contains("symbol_current")) this.currentSymbol.classList.remove("symbol_current");
+    if (this.currentSymbol.classList.contains("symbol_current")) {
+      this.currentSymbol.classList.remove("symbol_current");
+    }
     this.currentSymbol.classList.add('symbol_correct');
     this.currentSymbol = this.currentSymbol.nextElementSibling;
 
@@ -54,8 +76,8 @@ class Game {
 
   setNewWord() {
     const word = this.getWord();
-
     this.renderWord(word);
+    this.startTimer();  // Начинаем отсчёт времени для нового слова
   }
 
   getWord() {
@@ -74,14 +96,15 @@ class Game {
       ],
       index = Math.floor(Math.random() * words.length);
 
-    return words[index];
+    this.currentWord = words[index]; // Сохраняем текущее слово для отсчёта времени
+    return this.currentWord;
   }
 
   renderWord(word) {
     const html = [...word]
       .map(
         (s, i) =>
-          `<span class="symbol ${i === 0 ? 'symbol_current': ''}">${s}</span>`
+          `<span class="symbol ${i === 0 ? 'symbol_current' : ''}">${s}</span>`
       )
       .join('');
     this.wordElement.innerHTML = html;
@@ -90,5 +113,4 @@ class Game {
   }
 }
 
-new Game(document.getElementById('game'))
-
+new Game(document.getElementById('game'));

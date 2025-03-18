@@ -1,13 +1,37 @@
+/* Стиль для основного контейнера */
+.card {
+  padding: 20px;
+  text-align: center;
+}
+
+.status {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+/* Стиль для слова */
 .symbol {
   font-size: 50px;
+  margin: 0 5px;
 }
 
 .symbol_correct {
   color: green;
 }
 
+.symbol_current {
+  color: red;
+}
+
+/* Стиль для таймера */
+.status__timer {
+  font-size: 24px;
+  color: red;
+  font-weight: bold;
+}
+
+/* Стиль для красного фона ошибки */
 .word_incorrect {
   background: red;
   color: #fff;
 }
-
